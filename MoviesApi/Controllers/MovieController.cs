@@ -20,12 +20,26 @@ namespace MoviesApi.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Recupera todos os filmes existentes no banco de dados
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
+        /// <returns>IEnumerable</returns>
+        /// <response code="200">Sucesso</response>
         [HttpGet]
         public IEnumerable<ReadMovieDto> GetMovies([FromQuery] int skip = 0, [FromQuery] int take = 50)
         {
             return _mapper.Map<List<ReadMovieDto>>(_context.Movies.Skip(skip).Take(take));
         }
 
+        /// <summary>
+        /// Recupera filme com ID correspondente
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>IActionResult</returns>
+        /// <response code="200">Sucesso</response>
+        /// <response code="404">Caso o ID não seja encontrado</response>
         [HttpGet("{id}")]
         public IActionResult GetMovieById(int id)
         {
@@ -35,7 +49,14 @@ namespace MoviesApi.Controllers
             return Ok(movieDto);
         }
 
+        /// <summary>
+        /// Adiciona um filme ao banco de dados
+        /// </summary>
+        /// <param name="movieDto">Objeto com os campos necessários para criação de um filme</param>
+        /// <returns>IActionResult</returns>
+        /// <response code="201">Caso inclusão seja feita com sucesso</response>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         public IActionResult AddMovie([FromBody] CreateMovieDto movieDto)
         {
             Movie movie = _mapper.Map<Movie>(movieDto);
@@ -44,6 +65,12 @@ namespace MoviesApi.Controllers
             return CreatedAtAction(nameof(GetMovieById), new { id = movie.Id }, movie);
         }
 
+        /// <summary>
+        /// Atualiza todas as informações do filme correspondente a um ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="movieDto"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public IActionResult UpdateMovie(int id, [FromBody] UpdateMovieDto movieDto)
         {
@@ -54,6 +81,12 @@ namespace MoviesApi.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Atualiza informação específica do filme correspondente a um ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="patch"></param>
+        /// <returns></returns>
         [HttpPatch("{id}")]
         public IActionResult UpdateMoviePartial(int id, JsonPatchDocument<UpdateMovieDto> patch)
         {
@@ -71,6 +104,11 @@ namespace MoviesApi.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Exclui do banco de dados filme com o ID correspondente
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public IActionResult DeleteMovie(int id)
         {
